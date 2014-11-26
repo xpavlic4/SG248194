@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Integration Test Server" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../todo-liberty-server/src/main/resources/server.xsd">
+	<featureManager>
+		<feature>servlet-3.0</feature>
+
+		<!-- JDBC support -->
+		<feature>jdbc-4.0</feature>
+
+		<!-- JNDI Support, i.e. @Resource -->
+		<feature>jndi-1.0</feature>
+	</featureManager>
+
+	<httpEndpoint id="defaultHttpEndpoint" host="localhost" httpPort="9080" httpsPort="9443" />
+
+	<library id="H2Lib">
+		<fileset dir="${project.build.directory}/h2lib" includes="*.jar" />
+	</library>
+
+	<jdbcDriver id="H2Driver" libraryRef="H2Lib" javax.sql.DataSource="org.h2.jdbcx.JdbcDataSource" />
+
+	<dataSource jndiName="jdbc/TODOLIST" jdbcDriverRef="H2Driver" type="javax.sql.DataSource">
+		<connectionManager maxPoolSize="5" minPoolSize="1" numConnectionsPerThreadLocal="1" />
+		<!-- configure in-memory H2 database instance -->
+		<properties URL="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1"></properties>
+	</dataSource>
+
+	<!-- we are pointing to the exploded WAR file located in the Maven project's target directory -->
+	<webApplication location="${project.build.directory}/${project.build.finalName}" contextRoot="/"/>
+
+	<applicationMonitor dropinsEnabled="false" updateTrigger="polled" pollingRate="500ms" />
+</server>

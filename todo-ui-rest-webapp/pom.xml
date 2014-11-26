@@ -1,0 +1,133 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>todo</groupId>
+		<artifactId>todo-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../todo-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>todo-ui-rest-webapp</artifactId>
+	<packaging>war</packaging>
+	<description>Contains the REST + AJAX based web UI</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- replace Maven ${...} properties used in the liberty config files with actual values -->
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/wlp-config</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources/wlp-config</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.ibm.websphere.wlp.maven.plugins</groupId>
+				<artifactId>liberty-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-and-start-server</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>create-server</goal>
+							<goal>start-server</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-server</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop-server</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configFile>${project.build.directory}/wlp-config/server.xml</configFile>
+					<jvmOptions>${project.build.directory}/wlp-config/jvm.options</jvmOptions>
+					<overwrite>true</overwrite>
+					<refresh>false</refresh>
+					<installDirectory>${project.build.directory}/liberty</installDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- exclude integration tests from surefire plugin -->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*ITest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- enable integration tests with failsafe plugin -->
+				<!-- why failsafe? see: http://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#surefire-v-failsafe -->
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.16</version>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*ITest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<!-- specifies the service implementation to be used -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-inmemory-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
+		<dependency>
+			<groupId>net.sourceforge.jwebunit</groupId>
+			<artifactId>jwebunit-htmlunit-plugin</artifactId>
+			<version>3.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.restassured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>1.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

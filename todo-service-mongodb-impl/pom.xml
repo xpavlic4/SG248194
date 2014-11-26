@@ -1,0 +1,204 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>todo</groupId>
+		<artifactId>todo-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../todo-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>todo-service-mongodb-impl</artifactId>
+	<description>
+		Contains the MongoDB implementation of the TODO service.
+		It is configured and packaged as a CDI bean (@javax.inject.Singleton)
+	</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- replace Maven ${...} properties used in the liberty config files with actual values -->
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/wlp-config</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources/wlp-config</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!-- before the integration test runs create a pre-configured liberty server -->
+				<groupId>com.ibm.websphere.wlp.maven.plugins</groupId>
+				<artifactId>liberty-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>create-server</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- location of liberty binaries is configured in the dependencyManagement section of the parent project's pom.xml -->
+					<configFile>${project.build.directory}/wlp-config/server.xml</configFile>
+					<jvmOptions>${project.build.directory}/wlp-config/jvm.options</jvmOptions>
+					<overwrite>true</overwrite>
+					<refresh>false</refresh>
+					<installDirectory>${project.build.directory}/liberty</installDirectory>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!--
+					Arquillian will deploy the WAR holding the integration test via the dropins feature of WLP. Since WLP does not allow the definition
+					of shared library references for WARs installed via dropins directory we have to make the mongodb java driver available via the global
+					shared library.
+					http://pic.dhe.ibm.com/infocenter/wasinfo/v8r5/topic/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_classloader_global_libs.html
+
+					To achieve this we use the maven-dependency-plugin to copy the mongodb java driver from the maven repo to the global shared library folder
+					of liberty in the pre-integration-test phase after the test liberty server was installed into the project's target directory.
+
+					It now is important that the mongo db instance configured in the server.xml explicitly references the global shared library. To do so the
+					libraryRef="global" attribute needs to be set.
+				-->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.mongodb</groupId>
+									<artifactId>mongo-java-driver</artifactId>
+									<type>jar</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/liberty/wlp/usr/shared/config/lib/global/</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!-- exclude integration tests from surefire plugin -->
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*ITest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- enable integration tests with failsafe plugin -->
+				<!-- why failsafe? see: http://maven.apache.org/surefire/maven-failsafe-plugin/faq.html#surefire-v-failsafe -->
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.16</version>
+				<executions>
+					<execution>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*ITest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>1.1.1.Final</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- LIBERTY CONTAINER DEPENDENCIES -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.11.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
+		<dependency>
+			<!-- generic service API test case -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-api</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Arquillian JUnit Runner -->
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Arquillian Maven Dependency Resolver support -->
+			<groupId>org.jboss.shrinkwrap.resolver</groupId>
+			<artifactId>shrinkwrap-resolver-depchain</artifactId>
+			<scope>test</scope>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<!-- Arquillian WebSphere Liberty Profile support -->
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-wlp-managed-8.5</artifactId>
+			<version>1.0.0.Alpha2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Embedded MongoDB -->
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>1.40</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

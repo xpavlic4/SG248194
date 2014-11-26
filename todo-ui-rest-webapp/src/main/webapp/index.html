@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<title>Todo Web Application</title>
+
+	<!-- Dojo mobile stylesheets and JavaScript modules -->
+	<link href="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojox/mobile/themes/iphone/iphone.css" rel="stylesheet"></link>
+	<script type="text/javascript">
+		var dojoConfig = {
+			async: true,
+			// Fix the path name to properly reference local modules when using Dojo from a CDN
+			packages: [
+				{
+					name: "app",
+					location: "/app",
+				}
+			]
+		}
+	</script>
+	<script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.1/dojo/dojo.js"></script>
+</head>
+<body>
+	<!-- Container to add the todo list and item nodes to programmatically -->
+	<div id="view-container">
+	</div>
+
+	<!-- Application JavaScript -->
+	<script type="text/javascript" src="app/main.js"></script>
+</body>
+</html>

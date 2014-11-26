@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="https://raw.github.com/apache/wicket/master/wicket-core/src/main/resources/META-INF/wicket-1.5.xsd">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+</head>
+<body>
+<wicket:extend>
+
+<div class="panel panel-default">
+
+	<form action="#" wicket:id="edit-todo-list-form">
+		<div class="input-group">
+		  <span class="label label-default">Name:</span><input name="name" wicket:id="name" type="text" class="form-control" placeholder="name"></input><br />
+		  <span class="label label-default">Description:</span> <textarea name="description" cols="80" rows="1" wicket:id="description" class="form-control" placeholder="description"></textarea>
+		</div>
+		<input type="submit" value="Save changes" class="btn btn-default" wicket:id="submitButton" />
+	</form>
+
+</div>
+
+</wicket:extend>
+</body>
+</html>

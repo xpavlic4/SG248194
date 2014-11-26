@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="https://raw.github.com/apache/wicket/master/wicket-core/src/main/resources/META-INF/wicket-1.5.xsd">
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+</head>
+<body>
+<wicket:extend>
+
+<div class="panel panel-default">
+	<div class="panel-heading">You currently have <span wicket:id="lists-count">2</span> TODO lists.</div>
+	<div class="list-group" wicket:id="todo-lists">
+	  <div class="list-group-item">
+	  	<span class="badge" wicket:id="list-items-count">10</span>
+	    <h4 class="list-group-item-heading">
+	    	<span wicket:id="list-name">Grocery Shopping</span>
+	    	<a class="btn btn-default btn-xs" wicket:id="list-link" title="View this list's items"><span class="glyphicon glyphicon-align-left"></span> View</a>
+	    	<a class="btn btn-default btn-xs" wicket:id="list-edit" title="Change this list's name and description"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+	    	<a class="btn btn-xs btn-danger" wicket:id="list-remove" title="Delete this list and all it's items"><span class="glyphicon glyphicon-remove-sign"></span> Delete</a>
+	    </h4>
+	    <p class="list-group-item-text"><span wicket:id="list-description">Stuff I need to buy at the supermarket</span></p>
+	  </div>
+
+	  <wicket:remove>
+	  <div class="list-group-item">
+	  	<span class="badge">1</span>
+	    <h4 class="list-group-item-heading">
+	    	Project 1
+	    	<a class="btn btn-default btn-xs"><span class="glyphicon glyphicon-align-left"></span> View</a>
+	    	<a class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+	    	<a class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-remove-sign"></span> Delete</a>
+	    </h4>
+	    <p class="list-group-item-text">All activities related to project 1</p>
+	  </div>
+	  </wicket:remove>
+
+	</div>
+
+	<div class="panel-footer">
+
+		<div wicket:id="feedbackPanel"></div>
+
+		<form action="#" wicket:id="new-todo-list-form">
+			<div class="input-group">
+			  <input name="name" wicket:id="name" type="text" class="form-control" placeholder="name"></input><br />
+			  <textarea name="description" cols="80" rows="1" wicket:id="description" class="form-control" placeholder="description"></textarea>
+			</div>
+			<input type="submit" value="Create new TODO list" class="btn btn-default" wicket:id="submitButton"></input>
+		</form>
+	</div>
+</div>
+
+</wicket:extend>
+</body>
+</html>

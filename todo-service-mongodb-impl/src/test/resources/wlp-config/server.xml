@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Integration Test Server" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../todo-liberty-server/src/main/resources/server.xsd">
+
+	<featureManager>
+		<!-- JMX and Servlet support - required by Arquillian -->
+		<!-- https://docs.jboss.org/author/display/ARQ/WLP+V8.5+-+Managed -->
+		<feature>localConnector-1.0</feature>
+		<feature>servlet-3.0</feature>
+
+		<!-- CDI support, i.e. @Inject -->
+		<feature>cdi-1.0</feature>
+
+		<!-- MongoDB support -->
+		<feature>mongodb-2.0</feature>
+
+		<!-- JNDI Support, i.e. @Resource -->
+		<feature>jndi-1.0</feature>
+	</featureManager>
+
+	<httpEndpoint id="defaultHttpEndpoint" host="localhost" httpPort="9080" />
+
+	<!-- http://pic.dhe.ibm.com/infocenter/wasinfo/v8r5/topic/com.ibm.websphere.wlp.express.doc/ae/twlp_mongodb_create.html -->
+	<mongoDB jndiName="mongo/TODOLIST" databaseName="todolistTest">
+		<mongo id="mongoTestDb" libraryRef="global">
+			<hostNames>localhost</hostNames>
+			<ports>9991</ports>
+		</mongo>
+	</mongoDB>
+
+	<!-- dropins support and mbean trigger required by Arquillian -->
+	<applicationMonitor dropinsEnabled="true" updateTrigger="mbean" />
+</server>

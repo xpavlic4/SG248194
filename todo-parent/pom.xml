@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>todo</groupId>
+	<artifactId>todo-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<description>Parent Maven project for the example TODO list application, that holds common configuration applicable for all sub modules</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<slf4j.version>1.7.5</slf4j.version>
+		<spring.version>3.2.4.RELEASE</spring.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>version99</id>
+			<!-- highly available repository serving empty artifacts -->
+			<url>http://version99.qos.ch/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>wasdev</id>
+			<url>http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/maven/repository/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<prerequisites>
+		<maven>3.0.5</maven>
+	</prerequisites>
+
+	<inceptionYear>2012</inceptionYear>
+
+	<build>
+		<plugins>
+			<!-- plugin configurations listed here apply to all child modules -->
+
+			<plugin>
+				<!-- Require Java 7 for all modules -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<compilerVersion>1.7</compilerVersion>
+					<source>1.7</source>
+					<target>1.7</target>
+					<optimize>true</optimize>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<!-- also deploy a jar file containing the sources when a module is deployed to a repo -->
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-scm-plugin</artifactId>
+				<version>1.8.1</version>
+				<configuration>
+					<providerImplementations>
+						<svn>javasvn</svn>
+					</providerImplementations>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+						<artifactId>maven-scm-provider-svnjava</artifactId>
+						<version>2.0.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<!-- select Java based SVN client for maven release -->
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<providerImplementations>
+						<svn>javasvn</svn>
+					</providerImplementations>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+						<artifactId>maven-scm-provider-svnjava</artifactId>
+						<version>2.0.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+
+		<pluginManagement>
+			<!-- plugin configurations listed here apply to all child modules which explicitly list these plugins in there <build><plugins>...</plugins></build>
+				section -->
+
+			<plugins>
+				<plugin>
+					<groupId>com.ibm.websphere.wlp.maven.plugins</groupId>
+					<artifactId>liberty-maven-plugin</artifactId>
+					<version>1.1</version>
+					<configuration>
+						<assemblyArtifact>
+							<!-- instruct the liberty maven plugin to use the liberty server binaries provided by this artifact -->
+							<groupId>todo</groupId>
+							<artifactId>todo-liberty-server</artifactId>
+							<version>8.5.5</version>
+							<type>zip</type>
+						</assemblyArtifact>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencies>
+		<!-- dependencies listed here apply to all child modules -->
+
+		<!-- use SLF4J + LogBack as logging implementation -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<!-- SLF4J implementation of commons-logging -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<!-- workaround to exclude commons-logging effectively see http://slf4j.org/faq.html#excludingJCL for more details -->
+			<!-- e.g. spring-core depends on that artifact -->
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>99-empty</version>
+		</dependency>
+		<dependency>
+			<!-- LogBack natively implements the SLF4J API, therefore no additional artifact like "slf4j-logback" is required -->
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+
+		<!-- JEE6 CONTAINER DEPENDENCIES -->
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-web-api</artifactId>
+			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

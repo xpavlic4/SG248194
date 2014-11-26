@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>todo</groupId>
+		<artifactId>todo-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../todo-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>todo-liberty-server</artifactId>
+	<description>Provides the WebSphere Liberty Server binaries to be used by the maven-liberty-plugin</description>
+	<version>8.5.5</version>
+	<packaging>pom</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- zip the liberty profile server -->
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/todo-liberty-server.xml</descriptor>
+					</descriptors>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>${project.artifactId}-${project.version}</finalName>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<!-- attach the server.xsd file as deployable artifact -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>attach-artifacts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>src/main/resources/server.xsd</file>
+									<type>xsd</type>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<!-- activate this profile to regenerate the server.xsd for the liberty server -->
+			<id>regenerate-server-xsd</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<!-- http://pic.dhe.ibm.com/infocenter/wasinfo/v8r5/topic/com.ibm.websphere.wlp.core.doc/ae/rwlp_schema_gen.html -->
+							<executable>java</executable>
+							<arguments>
+								<argument>-jar</argument>
+								<argument>src/main/resources/wlp/bin/tools/ws-schemagen.jar</argument>
+								<argument>src/main/resources/server.xsd</argument>
+								<argument>--locale=en_US</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

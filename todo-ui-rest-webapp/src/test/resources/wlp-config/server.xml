@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Integration Test Server" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../todo-liberty-server/src/main/resources/server.xsd">
+	<featureManager>
+		<feature>servlet-3.0</feature>
+
+		<!-- JAX REST api -->
+		<feature>jaxrs-1.1</feature>
+
+		<!-- EJB support -->
+		<feature>ejbLite-3.1</feature>
+	</featureManager>
+
+	<httpEndpoint id="defaultHttpEndpoint" host="localhost" httpPort="9080" httpsPort="9443" />
+
+	<!-- we are pointing to the exploded WAR file located in the Maven project's target directory -->
+	<webApplication location="${project.build.directory}/${project.build.finalName}" contextRoot="/" />
+
+	<applicationMonitor dropinsEnabled="false" updateTrigger="polled" pollingRate="500ms" />
+</server>

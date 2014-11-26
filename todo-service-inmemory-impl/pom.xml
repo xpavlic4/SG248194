@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>todo</groupId>
+		<artifactId>todo-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../todo-parent/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>todo-service-inmemory-impl</artifactId>
+	<description>
+		Contains the memory-based implementation of the TODO service.
+		It is configured and packaged as a stateless EJB (@javax.ejb.Stateless)
+	</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<!--
+				high performance object mapping framework.
+				http://code.google.com/p/orika/
+				used to convert service objects to entity objects and vice versa
+			-->
+			<groupId>ma.glasnost.orika</groupId>
+			<artifactId>orika-core</artifactId>
+			<version>1.4.3</version>
+		</dependency>
+
+		<!-- TEST DEPENDENCIES -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>todo-service-api</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

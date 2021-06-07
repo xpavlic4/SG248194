@@ -159,7 +159,7 @@
 			<!-- LogBack natively implements the SLF4J API, therefore no additional artifact like "slf4j-logback" is required -->
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.0.13</version>
+			<version>1.2.0</version>
 		</dependency>
 
 		<!-- JEE6 CONTAINER DEPENDENCIES -->
